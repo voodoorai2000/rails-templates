@@ -8,7 +8,7 @@
   plugin 'resource_controller', :git => "git://github.com/giraffesoft/resource_controller.git"
   plugin 'paperclip', :git => "git://github.com/thoughtbot/paperclip.git"
   plugin 'string-mapper', :git => "git://github.com/nando/string-mapper.git"
-  plugin 'mundo-pepino', :git => "git://github.com/voodoorai2000/mundo-pepino.git"
+  plugin 'mundo-pepino', :git => "git://github.com/nando/mundo-pepino.git"
   
 
 # Delete unnecessary files
