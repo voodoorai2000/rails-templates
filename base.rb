@@ -1,3 +1,5 @@
+#TODO: create a welcome controller, as there is no index.html and so it raises an error
+#add the db:prepare task
 # Plugins
   plugin 'restful-authentication', :git => 'git://github.com/technoweenie/restful-authentication.git'
   plugin 'hoptoad_notifier', :git => "git://github.com/thoughtbot/hoptoad_notifier.git"
@@ -136,7 +138,8 @@ Rails::Initializer.run do |config|
    config.gem  'thoughtbot-factory_girl',
                :lib    => false,
                :source => "http://gems.github.com"
-
+   config.gem  'jscruggs-metric_fu',
+               :lib => 'metric_fu'
 
   # Only load the plugins named here, in the order given. By default, all plugins 
   # in vendor/plugins are loaded in alphabetical order.
@@ -182,6 +185,42 @@ end
 
 
 # ====================
+# staging.rb
+# ====================
+file 'config/environments/staging.rb', 
+%q{
+  # Settings specified here will take precedence over those in config/environment.rb
+
+  # The production environment is meant for finished, "live" apps.
+  # Code is not reloaded between requests
+  config.cache_classes = true
+
+  # Full error reports are disabled and caching is turned on
+  config.action_controller.consider_all_requests_local = false
+  config.action_controller.perform_caching             = true
+  config.action_view.cache_template_loading            = true
+
+  # See everything in the log (default is :info)
+  # config.log_level = :debug
+
+  # Use a different logger for distributed setups
+  # config.logger = SyslogLogger.new
+
+  # Use a different cache store in production
+  # config.cache_store = :mem_cache_store
+
+  # Enable serving of images, stylesheets, and javascripts from an asset server
+  # config.action_controller.asset_host = "http://assets.example.com"
+
+  # Disable delivery errors, bad email addresses will be ignored
+  # config.action_mailer.raise_delivery_errors = false
+
+  # Enable threaded mode
+  # config.threadsafe!
+}
+
+
+# ====================
 # DATABASE
 # ====================
 
@@ -189,21 +228,63 @@ file 'config/database.yml',
 %q{
 development:
   adapter: sqlite3
-  database: <%= PROJECT_NAME %>_development
+  database: <%= PROJECT_NAME %>_development.sqlite3
   
 test:
   adapter: sqlite3
-  database: db/<%= PROJECT_NAME %>_test
+  database: db/<%= PROJECT_NAME %>_test.sqlite3
 
   
 staging:
   adapter: sqlite3
-  database: db/<%= PROJECT_NAME %>_staging
+  database: db/<%= PROJECT_NAME %>_staging.sqlite3
 
   
 production:
   adapter: sqlite3
-  database: db/<%= PROJECT_NAME %>__production
+  database: db/<%= PROJECT_NAME %>__production.sqlite3
+}
+
+# ====================
+# METRIC_FU
+# ====================
+
+file 'RAKEFILE', 
+%q{
+  require(File.join(File.dirname(__FILE__), 'config', 'boot'))
+
+  require 'rake'
+  require 'rake/testtask'
+  require 'rake/rdoctask'
+
+  require 'tasks/rails'
+
+  require 'metric_fu'
+  MetricFu::Configuration.run do |config|
+          config.metrics  = [:churn, :saikuro, :stats, :flog, :flay, :reek, :roodi] #:rcov
+          config.flay     = { :dirs_to_flay => ['app', 'lib', 'features', 'specs']  } 
+          config.flog     = { :dirs_to_flog => ['app', 'lib', 'features', 'specs']  }
+          config.reek     = { :dirs_to_reek => ['app', 'lib', 'features', 'specs']  }
+          config.roodi    = { :dirs_to_roodi => ['app', 'lib', 'features', 'specs'] }
+          config.saikuro  = { :output_directory => 'scratch_directory/saikuro', 
+                              :input_directory => ['app', 'lib'],
+                              :cyclo => "",
+                              :filter_cyclo => "0",
+                              :warn_cyclo => "5",
+                              :error_cyclo => "7",
+                              :formater => "text"} #this needs to be set to "text"
+          config.churn    = { :start_date => "1 year ago", :minimum_churn_count => 10}
+          config.rcov     = { :test_files => ['test/**/*_test.rb', 
+                                              'spec/**/*_spec.rb'],
+                              :rcov_opts => ["--sort coverage", 
+                                             "--no-html", 
+                                             "--text-coverage",
+                                             "--no-color",
+                                             "--profile",
+                                             "--rails",
+                                             "--exclude /gems/,/Library/,spec"]}
+      end
+
 }
  
 #====================
@@ -237,6 +318,7 @@ file 'config/deploy.rb',
   set :deploy_via, :checkout
   
   set :user, "deploy"
+  set :password, "<password>"
   set :port, "32200"  
   set :runner, "deploy"
   
@@ -571,6 +653,7 @@ log/*.log
 tmp/**/*
 config/database.yml
 db/*.sqlite3
+.DS_Store
 END
 
 git :add => ".", :commit => "-m 'initial commit'"
