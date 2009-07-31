@@ -8,7 +8,7 @@
   plugin 'resource_controller', :git => "git://github.com/giraffesoft/resource_controller.git"
   plugin 'paperclip', :git => "git://github.com/thoughtbot/paperclip.git"
   plugin 'string-mapper', :git => "git://github.com/nando/string-mapper.git"
-  plugin 'mundo-pepino', :git => "git://github.com/nando/mundo-pepino.git"
+  plugin 'mundo-pepino', :git => "git://github.com/voodoorai2000/mundo-pepino.git"
   
 
 # Delete unnecessary files
@@ -222,7 +222,6 @@ file 'config/environments/staging.rb',
   # config.threadsafe!
 }
 
-
 # ====================
 # DATABASE
 # ====================
@@ -404,9 +403,10 @@ generate("cucumber")
 #TODO: Add cucumber autotest and growler
 file 'cucumber.yml',
 %q{
-  webrat:   --require features/step_definitions --require features/support/webrat_env.rb   -l es  --tags webrat    --format pretty features
-  selenium: --require features/step_definitions --require features/support/selenium_env.rb -l es  --tags selenium  --format pretty features
+  webrat:   --require features/step_definitions --require features/support/webrat_env.rb   -l es  --tags webrat    --format pretty features --color
+  selenium: --require features/step_definitions --require features/support/selenium_env.rb -l es  --tags selenium  --format pretty features --color
   autotest: --require features/step_definitions --require features/support/webrat_env.rb   -l es  --tags webrat    --format pretty features --color
+  caracteristicas: --require features/step_definitions --require features/support/webrat_env.rb -l es --format pretty caracteristicas
 }
 
 #TODO: include factory_girl
@@ -608,6 +608,11 @@ namespace :features do
   task :selenium do
     sh "script/cucumber features --profile selenium"
   end
+  
+  desc "Run spanish features"
+  task :selenium do
+    sh "script/cucumber features --profile caracteristicas"
+  end
 
 end
 }
@@ -637,6 +642,10 @@ rake('gems:unpack', :sudo => true)
 #Generate
 generate('authenticated', 'user session')
 generate('rspec')
+generate('mundo_pepino') 
+generate('caracteristica Orchard Huerto name:string:nombre area:integer:área longitude:string:longitud latitude:string:latitud used:boolean:usado')
+generate('scaffold Orchard name:string area:integer longitude:string latitude:string used:boolean')
+
 #generate('cucumber')
 
 # Migrate
@@ -644,7 +653,6 @@ rake('db:migrate')
 
 # Make sure testing is in place
 rake('test:all')
-
 #Git
 git :init
 
