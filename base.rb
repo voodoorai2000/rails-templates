@@ -7,6 +7,9 @@
   plugin 'factory_girl', :git => "git://github.com/thoughtbot/factory_girl.git"
   plugin 'resource_controller', :git => "git://github.com/giraffesoft/resource_controller.git"
   plugin 'paperclip', :git => "git://github.com/thoughtbot/paperclip.git"
+  plugin 'string-mapper', :git => "git://github.com/nando/string-mapper.git"
+  plugin 'mundo-pepino', :git => "git://github.com/nando/mundo-pepino.git"
+  
 
 # Delete unnecessary files
   run "rm README"
@@ -102,7 +105,7 @@ Rails::Initializer.run do |config|
     
     config.gem 'cucumber', 
                :lib      => false, 
-               :version  => ">=0.2.3"
+               :version  => ">=0.3"
     
     config.gem 'chronic'
     
@@ -634,6 +637,7 @@ rake('gems:unpack', :sudo => true)
 #Generate
 generate('authenticated', 'user session')
 generate('rspec')
+#generate('cucumber')
 
 # Migrate
 rake('db:migrate')
