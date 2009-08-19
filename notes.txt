@@ -1,5 +1,6 @@
-Database.yml can't have PROJECT_NAME as a variable
-Add the rake task db:prepare
+*Database.yml can't have PROJECT_NAME as a variable
+
+*Add the rake task db:prepare
 	namespace :db do
 	  desc "migrate development, test datatases and delete the test folder"
 	  task :prepare do 
@@ -7,3 +8,5 @@ Add the rake task db:prepare
 	    sh "rake db:test:prepare"
 	    sh "rm -rf test/"
 	  end
+
+*Run script/generate nifty_scaffold and nifty_layout
