@@ -1,0 +1,9 @@
+Database.yml can't have PROJECT_NAME as a variable
+Add the rake task db:prepare
+	namespace :db do
+	  desc "migrate development, test datatases and delete the test folder"
+	  task :prepare do 
+	    sh "rake db:migrate"
+	    sh "rake db:test:prepare"
+	    sh "rm -rf test/"
+	  end
